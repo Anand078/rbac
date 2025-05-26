@@ -147,4 +147,46 @@ sequenceDiagram
         AuthMiddleware-->>User: 401 Unauthorized
     end
     
-    AuthMiddleware->>JWT
+    AuthMiddleware->>JWT: Parse(token, secret)
+    
+    alt Invalid Token
+        JWT-->>AuthMiddleware: Parse error
+        AuthMiddleware-->>User: 401 Unauthorized
+    end
+    
+    JWT-->>AuthMiddleware: Claims{user_id, email, exp}
+    
+    AuthMiddleware->>AuthMiddleware: Check expiration
+    
+    alt Token Expired
+        AuthMiddleware-->>User: 401 Unauthorized
+    end
+    
+    AuthMiddleware->>Context: Set("user_id", user_id)
+    AuthMiddleware->>Context: Set("email", email)
+    
+    AuthMiddleware->>AuthMiddleware: Authorize("course", "read")
+    AuthMiddleware->>RBACService: HasPermission(user_id, "course", "read")
+    
+    RBACService->>Database: Query user permissions
+    Note right of Database: JOIN users, user_roles,<br/>role_permissions, permissions
+    
+    Database-->>RBACService: Permission check result
+    
+    alt No Permission
+        RBACService-->>AuthMiddleware: false
+        AuthMiddleware-->>User: 403 Forbidden
+    end
+    
+    RBACService-->>AuthMiddleware: true
+    AuthMiddleware->>API: Next() - Continue to handler
+    
+    API->>Handler: ListCourses(context)
+    Handler->>Context: Get("user_id")
+    Context-->>Handler: user_id
+    
+    Handler->>Database: SELECT courses
+    Database-->>Handler: Course list
+    
+    Handler->>Response: SuccessResponse(200, courses)
+    Response-->>User: 200 OK + Course data
