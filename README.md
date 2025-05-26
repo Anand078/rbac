@@ -1,4 +1,4 @@
-# rbac
+# RBAC
 
 A Go-based application implementing Role-Based Access Control (RBAC) with authentication.
 
