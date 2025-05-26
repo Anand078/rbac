@@ -167,7 +167,7 @@ func AssignRole(userID int, roleID int) error {
     db := supabase.NewClient("https://your-project-url", "your-api-key")
 
     // Update user's role in the database
-    _, err := db.Table("user_roles").Insert(map[string]interface{}{
+    _, err := db.Table("user_roles").Insert(map[string]any{
         "user_id": userID,
         "role_id": roleID,
     })
