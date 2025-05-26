@@ -1,4 +1,4 @@
-module github.com/yourusername/rbac-system
+module github.com/Anand078/rbac
 
 go 1.24.3
 
