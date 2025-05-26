@@ -6,12 +6,12 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
-	"github.com/supabase-community/supabase-go"
+	supa "github.com/supabase-community/supabase-go"
 )
 
 type DB struct {
 	*sql.DB
-	SupabaseClient *supabase.Client
+	SupabaseClient *supa.Client
 }
 
 func NewConnection(databaseURL, supabaseURL, supabaseKey string) (*DB, error) {
@@ -25,8 +25,8 @@ func NewConnection(databaseURL, supabaseURL, supabaseKey string) (*DB, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	// Supabase client
-	supabaseClient, err := supabase.NewClient(supabaseURL, supabaseKey, &supabase.ClientOptions{})
+	// Supabase client - Updated syntax
+	supabaseClient, err := supa.NewClient(supabaseURL, supabaseKey, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create supabase client: %w", err)
 	}

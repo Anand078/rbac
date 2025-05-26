@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,8 @@ func main() {
 	// Initialize database
 	db, err := database.NewConnection(cfg.DatabaseURL, cfg.SupabaseURL, cfg.SupabaseServiceKey)
 	if err != nil {
+		errStr := err.Error()
+		fmt.Println(errStr)
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()

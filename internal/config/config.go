@@ -17,23 +17,37 @@ type Config struct {
 }
 
 func Load() *Config {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+	paths := []string{".env", "../.env", "../../.env"}
+
+	loaded := false
+	for _, path := range paths {
+		if err := godotenv.Load(path); err == nil {
+			log.Printf("Loaded .env from: %s", path)
+			loaded = true
+			break
+		}
 	}
 
-	return &Config{
-		SupabaseURL:        getEnv("SUPABASE_URL", ""),
-		SupabaseAnonKey:    getEnv("SUPABASE_ANON_KEY", ""),
-		SupabaseServiceKey: getEnv("SUPABASE_SERVICE_KEY", ""),
-		DatabaseURL:        getEnv("DATABASE_URL", ""),
-		JWTSecret:          getEnv("JWT_SECRET", "your-secret-key"),
-		Port:               getEnv("PORT", "8080"),
+	if !loaded {
+		log.Println("Warning: No .env file found, using system environment variables")
 	}
-}
 
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
+	config := &Config{
+		SupabaseURL:        os.Getenv("SUPABASE_URL"),
+		SupabaseAnonKey:    os.Getenv("SUPABASE_ANON_KEY"),
+		SupabaseServiceKey: os.Getenv("SUPABASE_SERVICE_KEY"),
+		DatabaseURL:        os.Getenv("DATABASE_URL"),
+		JWTSecret:          os.Getenv("JWT_SECRET"),
+		Port:               os.Getenv("PORT"),
 	}
-	return defaultValue
+
+	// Validate required fields
+	if config.SupabaseURL == "" {
+		log.Fatal("SUPABASE_URL is required")
+	}
+	if config.DatabaseURL == "" {
+		log.Fatal("DATABASE_URL is required")
+	}
+
+	return config
 }
