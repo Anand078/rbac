@@ -21,7 +21,7 @@ A Go-based application implementing Role-Based Access Control (RBAC) with authen
 
 ## Prerequisites
 
-- Go 1.24.3 or later
+- Go 1.24.3
 - Docker (for containerized deployment)
 - A PostgreSQL database
 - Supabase project with database and authentication enabled
